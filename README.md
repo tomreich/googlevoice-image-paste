@@ -13,11 +13,12 @@ A Chrome extension that enables pasting images directly into Google Voice conver
 
 ### Developer Mode (Unpacked Extension)
 
-1. Open Chrome and navigate to `chrome://extensions/`
-2. Enable **Developer mode** (toggle in top-right corner)
-3. Click **Load unpacked**
-4. Select the `GoogleVoicePasteImage` folder
-5. The extension is now active!
+1. Download the package from github (click Code > Download ZIP).  Unzip it and remember the folder name.  We'll use `GoogleVoiceImagePaste` as an example
+2. Open Chrome/Edge and navigate to `chrome://extensions/`
+3. Enable **Developer mode** toggle
+4. Click **Load unpacked**
+5. Select the `googlevoice-image-paste-main` folder inside the `GoogleVoiceImagePaste` folder.  It's the one with the manifest.json file in it.
+6. The extension is now active!  You will need to reload any Google Voice tabs.
 
 ## Usage
 
@@ -58,3 +59,4 @@ If Google Voice updates their interface, you may need to update the selectors in
 ## Version History
 
 - **1.0.0** - Initial release
+
