@@ -1,0 +1,20 @@
+{
+  "manifest_version": 3,
+  "name": "Google Voice Image Paste",
+  "version": "1.0.0",
+  "description": "Enables pasting images directly into Google Voice conversations",
+  "permissions": [
+    "activeTab",
+    "clipboardRead"
+  ],
+  "host_permissions": [
+    "https://voice.google.com/*"
+  ],
+  "content_scripts": [
+    {
+      "matches": ["https://voice.google.com/*"],
+      "js": ["content.js"],
+      "run_at": "document_idle"
+    }
+  ]
+}
