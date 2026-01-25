@@ -33,17 +33,7 @@ A Chrome extension that enables pasting images directly into Google Voice conver
 ### Image paste not working?
 
 1. Open Chrome DevTools (F12) and check the Console for messages starting with `[GV Image Paste]`
-2. The extension may need selector updates if Google Voice changed their DOM structure
-3. Ensure you have an image (not text) in your clipboard
-
-### Updating selectors
-
-If Google Voice updates their interface, you may need to update the selectors in `content.js`:
-
-1. Open Google Voice in Chrome
-2. Right-click on the message input field → Inspect
-3. Note the element's attributes (class, aria-label, etc.)
-4. Update the `CONFIG` object in `content.js`
+2. Ensure you have an image (not text) in your clipboard
 
 ## Files
 
@@ -59,4 +49,5 @@ If Google Voice updates their interface, you may need to update the selectors in
 ## Version History
 
 - **1.0.0** - Initial release
+
 
