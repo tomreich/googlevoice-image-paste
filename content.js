@@ -320,28 +320,91 @@
      * Trigger the file upload with the pasted image
      */
     function triggerFileUpload(fileInput, imageFile) {
-        // Create a DataTransfer to set files on the input
-        const dataTransfer = new DataTransfer();
-        
-        // Create a properly named file
-        const fileName = `pasted-image-${Date.now()}.png`;
-        const renamedFile = new File([imageFile], fileName, { type: imageFile.type });
-        
-        dataTransfer.items.add(renamedFile);
-        
-        // Set the files on the input
-        fileInput.files = dataTransfer.files;
-        
-        // Dispatch change event to notify Google Voice of the new file
-        const changeEvent = new Event('change', { bubbles: true, cancelable: true });
-        fileInput.dispatchEvent(changeEvent);
-        
-        // Also dispatch input event
-        const inputEvent = new Event('input', { bubbles: true, cancelable: true });
-        fileInput.dispatchEvent(inputEvent);
-        
-        console.log('[GV Image Paste] Image uploaded successfully:', fileName);
-        showNotification('Image pasted successfully!', 'success');
+        // Compress the image before uploading to avoid "file too large" errors
+        compressImage(imageFile).then(compressedFile => {
+            // Create a DataTransfer to set files on the input
+            const dataTransfer = new DataTransfer();
+            
+            dataTransfer.items.add(compressedFile);
+            
+            // Set the files on the input
+            fileInput.files = dataTransfer.files;
+            
+            // Dispatch change event to notify Google Voice of the new file
+            const changeEvent = new Event('change', { bubbles: true, cancelable: true });
+            fileInput.dispatchEvent(changeEvent);
+            
+            // Also dispatch input event
+            const inputEvent = new Event('input', { bubbles: true, cancelable: true });
+            fileInput.dispatchEvent(inputEvent);
+            
+            const sizeMB = (compressedFile.size / (1024 * 1024)).toFixed(2);
+            console.log('[GV Image Paste] Image uploaded successfully:', compressedFile.name, `(${sizeMB} MB)`);
+            showNotification('Image pasted successfully!', 'success');
+        }).catch(err => {
+            console.error('[GV Image Paste] Compression failed:', err);
+            showNotification('Failed to process image', 'error');
+        });
+    }
+
+    /**
+     * Compress an image file to reduce size (converts to JPEG with quality setting)
+     */
+    function compressImage(imageFile) {
+        return new Promise((resolve, reject) => {
+            const maxWidth = 2048;  // Max width in pixels
+            const maxHeight = 2048; // Max height in pixels
+            const quality = 0.85;   // JPEG quality (0.0 - 1.0)
+            const maxSizeMB = 2;    // Target max size in MB
+
+            const img = new Image();
+            const url = URL.createObjectURL(imageFile);
+
+            img.onload = () => {
+                URL.revokeObjectURL(url);
+
+                let { width, height } = img;
+                
+                // Calculate new dimensions if image is too large
+                if (width > maxWidth || height > maxHeight) {
+                    const ratio = Math.min(maxWidth / width, maxHeight / height);
+                    width = Math.round(width * ratio);
+                    height = Math.round(height * ratio);
+                }
+
+                // Create canvas and draw resized image
+                const canvas = document.createElement('canvas');
+                canvas.width = width;
+                canvas.height = height;
+                
+                const ctx = canvas.getContext('2d');
+                ctx.drawImage(img, 0, 0, width, height);
+
+                // Convert to JPEG blob with compression
+                canvas.toBlob(blob => {
+                    if (!blob) {
+                        reject(new Error('Failed to create blob'));
+                        return;
+                    }
+
+                    const fileName = `pasted-image-${Date.now()}.jpg`;
+                    const compressedFile = new File([blob], fileName, { type: 'image/jpeg' });
+                    
+                    const originalSizeMB = (imageFile.size / (1024 * 1024)).toFixed(2);
+                    const compressedSizeMB = (compressedFile.size / (1024 * 1024)).toFixed(2);
+                    console.log(`[GV Image Paste] Compressed: ${originalSizeMB} MB ? ${compressedSizeMB} MB`);
+                    
+                    resolve(compressedFile);
+                }, 'image/jpeg', quality);
+            };
+
+            img.onerror = () => {
+                URL.revokeObjectURL(url);
+                reject(new Error('Failed to load image'));
+            };
+
+            img.src = url;
+        });
     }
 
     /**
