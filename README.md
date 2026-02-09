@@ -42,13 +42,13 @@ A Chrome extension that enables pasting images directly into Google Voice conver
 
 ## Permissions
 
-- `activeTab` - Access to the current tab
-- `clipboardRead` - Read images from clipboard
-- `host_permissions` for `voice.google.com` - Run on Google Voice pages
+- `clipboardRead` - Read images from clipboard when you paste
+- `host_permissions` for `voice.google.com` - Run on Google Voice pages only
 
 ## Version History
 
 - **1.0.0** - Initial release
+- **1.1.0** - Fixed edge case with large images, removed unnecessary permissions
 
 ## Credits
 
