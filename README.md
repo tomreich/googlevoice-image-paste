@@ -50,4 +50,8 @@ A Chrome extension that enables pasting images directly into Google Voice conver
 
 - **1.0.0** - Initial release
 
+## Credits
+
+Icons provided by [Icons8](https://icons8.com)
+
 
